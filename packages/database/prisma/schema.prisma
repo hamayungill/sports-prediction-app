@@ -1,0 +1,1129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DB_URL")
+    schemas  = ["challenge", "internal", "sport", "user", "quest"]
+}
+
+// Users schema starts here
+model Users {
+    userId                     String                       @id @unique @default(uuid()) @map("user_id")
+    externalUserId             String                       @unique @map("external_user_id") @db.Text()
+    email                      String?                      @unique @map("email") @db.Text()
+    walletAddress              String                       @unique @map("wallet_address") @db.Text()
+    firstName                  String?                      @map("first_name") @db.Text()
+    lastName                   String?                      @map("last_name") @db.Text()
+    nickname                   String                       @unique @map("nickname") @db.Text()
+    accountStatus              Status                       @default(Active) @map("account_status")
+    createdAt                  DateTime                     @default(now()) @map("created_at")
+    updatedAt                  DateTime                     @updatedAt @map("updated_at")
+    isEmailVerified            Boolean                      @default(false) @map("is_email_verified")
+    meta                       Json?                        @default("{\"terms\":{\"v1_0_0\":false}}")
+    handle                     String                       @unique @db.Text
+    referralCode               String                       @unique @map("referral_code")
+    referrerUserId             String?                      @map("referrer_user_id")
+    membershipLevelId          Int                          @default(0) @map("membership_level_id")
+    membershipLevel            membershipLevels             @relation(fields: [membershipLevelId], references: [levelId])
+    referrer                   Users?                       @relation("referrer", fields: [referrerUserId], references: [userId])
+    challenges                 Challenges[]
+    challengeGroupParticipants ChallengeGroupParticipants[]
+    challengeParticipations    ChallengeParticipations[]
+    contractDataFeed           ContractDataFeed[]
+    UserRoles                  UserRoles[]
+    UserPreferences            UserPreferences[]
+    UserQuests                 UserQuests[]
+    QuestRewardLedger          QuestRewardLedger[]
+    favorites                  Favorites[]
+    Users                      Users[]                      @relation("referrer")
+
+    @@unique([email, walletAddress])
+    @@index([email])
+    @@index([walletAddress])
+    @@index([firstName, lastName])
+    @@index([accountStatus])
+    @@map("users")
+    @@schema("user")
+}
+
+model Roles {
+    roleId         Int              @id @default(autoincrement()) @map("role_id")
+    roleName       String           @unique @map("role_name") @db.Text
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime         @updatedAt @map("updated_at")
+    UserRoles      UserRoles[]
+    RolePermission RolePermission[]
+
+    @@map("roles")
+    @@schema("user")
+}
+
+model UserRoles {
+    id        String   @id @unique @default(uuid())
+    userId    String   @map("user_id")
+    user      Users    @relation(fields: [userId], references: [userId])
+    roleId    Int      @map("role_id")
+    role      Roles    @relation(fields: [roleId], references: [roleId])
+    isActive  Boolean  @default(true) @map("is_active")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@index([userId, roleId])
+    @@map("user_roles")
+    @@schema("user")
+}
+
+model Permission {
+    permissionId   Int              @id @default(autoincrement())
+    name           String           @db.Text
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime         @updatedAt @map("updated_at")
+    RolePermission RolePermission[]
+
+    @@map("permission")
+    @@schema("user")
+}
+
+model RolePermission {
+    id           Int        @id @default(autoincrement())
+    roleId       Int        @map("role_id")
+    role         Roles      @relation(fields: [roleId], references: [roleId])
+    permissionId Int        @map("permission_id")
+    permission   Permission @relation(fields: [permissionId], references: [permissionId])
+    createdAt    DateTime   @default(now()) @map("created_at")
+    updatedAt    DateTime   @updatedAt @map("updated_at")
+
+    @@map("role_permission")
+    @@schema("user")
+}
+
+model Preferences {
+    preferenceId    Int               @id @default(autoincrement()) @map("preference_id")
+    name            String            @unique @db.Text
+    value           Json              @db.JsonB
+    createdAt       DateTime          @default(now()) @map("created_at")
+    updatedAt       DateTime          @updatedAt @map("updated_at")
+    UserPreferences UserPreferences[]
+
+    @@map("preferences")
+    @@schema("user")
+}
+
+model UserPreferences {
+    userId       String      @map("user_id")
+    user         Users       @relation(fields: [userId], references: [userId])
+    preferenceId Int         @map("preference_id")
+    preference   Preferences @relation(fields: [preferenceId], references: [preferenceId])
+    value        String      @db.Text
+    createdAt    DateTime    @default(now()) @map("created_at")
+    updatedAt    DateTime    @updatedAt @map("updated_at")
+
+    @@id([userId, preferenceId])
+    @@map("user_preferences")
+    @@schema("user")
+}
+
+model IpLocation {
+    locationId Int      @id @unique @default(autoincrement()) @map("location_id")
+    ip         String   @db.Text
+    country    String   @db.Text
+    state      String   @db.Text
+    city       String   @db.Text
+    isCurrent  Boolean  @default(true) @map("is_current")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+    Events     Events[]
+
+    @@unique([ip, country, state, city], name: "unique_icsc")
+    @@index([ip]) // TODO: Add more fields as per the need based on monitoring
+    @@map("ip_locations")
+    @@schema("user")
+}
+
+model Events {
+    eventId       String     @id @unique @default(uuid()) @map("event_id") @db.Uuid
+    correlationId String     @map("correlation_id") @db.Uuid
+    userId        String     @map("user_id")
+    eventName     String     @map("event_name") @db.Text
+    eventCaller   String     @map("event_caller") @db.Text
+    data          Json       @db.Json
+    locationId    Int        @map("location_id") @db.Integer
+    location      IpLocation @relation(fields: [locationId], references: [locationId])
+    userAgent     String?    @map("user_agent") @db.Text
+    browser       String?    @db.Text
+    device        String?    @db.Text
+    os            String?    @db.Text
+    success       Boolean    @db.Boolean
+    notes         String?    @db.Text
+    errorMessage  String?    @map("error_message") @db.Text
+    apAuditLogId  String?    @map("ap_audit_log_id") @db.Uuid
+    createdAt     DateTime   @default(now()) @map("created_at")
+    updatedAt     DateTime   @updatedAt @map("updated_at")
+
+    @@index([correlationId])
+    @@index([userId])
+    @@map("events")
+    @@schema("user")
+}
+
+model Favorites {
+    userId      String     @map("user_id")
+    user        Users      @relation(fields: [userId], references: [userId])
+    challengeId Int        @map("challenge_id")
+    challenges  Challenges @relation(fields: [challengeId], references: [challengeId])
+    isFavorite  Boolean    @default(false) @map("is_favorite")
+    createdAt   DateTime   @default(now()) @map("created_at")
+    updatedAt   DateTime   @updatedAt @map("updated_at")
+
+    @@id([userId, challengeId])
+    @@index([userId, challengeId])
+    @@map("favorites")
+    @@schema("user")
+}
+
+model Waitlist {
+    waitlistId Int      @id @unique @default(autoincrement()) @map("waitlist_id")
+    email      String   @unique @db.Text()
+    inviteCode String   @unique @map("invite_code") @db.Text()
+    isApplied  Boolean  @default(false) @map("is_applied")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+
+    @@index([email])
+    @@index([inviteCode])
+    @@map("waitlist")
+    @@schema("user")
+}
+
+model BlacklistLocations {
+    blacklistLocationId Int        @id @unique @default(autoincrement()) @map("blacklist_location_id")
+    country             String     @map("country") @db.Text()
+    state               String?    @map("state") @db.Text()
+    city                String?    @map("city") @db.Text()
+    blockLevel          BlockLevel @map("block_level")
+    reason              String     @map("reason") @db.Text()
+    createdAt           DateTime   @default(now()) @map("created_at")
+    updatedAt           DateTime   @updatedAt @map("updated_at")
+
+    @@unique([country, state, city])
+    @@map("blacklist_locations")
+    @@schema("user")
+}
+
+model membershipLevels {
+    levelId                 Int         @id @unique @map("level_id")
+    levelName               String      @map("level_name")@db.Text()
+    description             String      @map("description") @db.Text()
+    eligibilityThreshold    Json        @map("eligibility_threshold") @db.JsonB
+    feeDeductionPct         Decimal     @map("fee_deduction_pct")
+    referralBonusPct        Decimal     @map("referral_bonus_pct")
+    status                  Status      @map("status")
+    createdAt               DateTime    @default(now()) @map("created_at")
+    updatedAt               DateTime    @updatedAt @map("updated_at")
+    user                    Users[]
+
+    @@map("membership_levels")
+    @@schema("user")
+}
+
+// Users schema ends here
+
+// Internal schema starts here
+
+// Internal schema ends here
+
+// Sport schema starts here
+
+model ApiSources {
+    apiSourceId   Int        @id @default(autoincrement()) @map("api_source_id")
+    apiSourceName String     @map("api_source_name") @db.Text()
+    isActive      Boolean    @default(false) @map("is_active")
+    createdAt     DateTime   @default(now()) @map("created_at")
+    updatedAt     DateTime   @updatedAt @map("updated_at")
+    games         Games[]
+    gameOdds      GameOdds[]
+
+    @@map("api_sources")
+    @@schema("sport")
+}
+
+model Sports {
+    sportId          Int                @id @default(autoincrement()) @map("sport_id")
+    sportName        String             @unique @map("sport_name") @db.Text()
+    featureFlags     Json?              @map("feature_flags") @db.JsonB
+    status           Status             @default(Inactive) @map("status")
+    createdAt        DateTime           @default(now()) @map("created_at")
+    updatedAt        DateTime           @updatedAt @map("updated_at")
+    leagues          Leagues[]
+    playerInSport    PlayerInSport[]
+    gamesStats       GamesStats[]
+    teamsStats       TeamsStats[]
+    playersStats     PlayersStats[]
+    sportInCategory  SportInCategory[]
+    challengeResults ChallengeResults[]
+    challenges       Challenges[]
+    games            Games[]
+    teams            Teams[]
+    players          Players[]
+    bookmakers       Bookmakers[]
+    betOdds          BetOdds[]
+    CategoriesGroups CategoriesGroups[]
+
+    @@map("sports")
+    @@schema("sport")
+}
+
+model Leagues {
+    leagueId     Int            @id @default(autoincrement()) @map("league_id")
+    leagueName   String         @map("league_name") @db.Text()
+    apiLeagueId  String?        @map("api_league_id") @db.Text()
+    sportId      Int            @map("sport_id")
+    sports       Sports         @relation(fields: [sportId], references: [sportId])
+    status       Status         @default(Inactive) @map("status")
+    createdAt    DateTime       @default(now()) @map("created_at")
+    updatedAt    DateTime       @updatedAt @map("updated_at")
+    seasons      Seasons[]
+    teamInLeague TeamInLeague[]
+
+    @@unique([sportId, leagueName])
+    @@map("leagues")
+    @@schema("sport")
+}
+
+model Seasons {
+    seasonId     Int            @id @default(autoincrement()) @map("season_id")
+    leagueId     Int?           @map("league_id")
+    leagues      Leagues?       @relation(fields: [leagueId], references: [leagueId])
+    status       Status         @default(Inactive) @map("status")
+    season       Int            @map("season")
+    createdAt    DateTime       @default(now()) @map("created_at")
+    updatedAt    DateTime       @updatedAt @map("updated_at")
+    games        Games[]
+    playerInTeam PlayerInTeam[]
+
+    @@unique([leagueId, season])
+    @@map("seasons")
+    @@schema("sport")
+}
+
+model Games {
+    gameId                 Int                      @id @default(autoincrement()) @map("game_id")
+    seasonId               Int                      @map("season_id")
+    seasons                Seasons                  @relation(fields: [seasonId], references: [seasonId])
+    sportId                Int                      @map("sport_id")
+    sport                  Sports                   @relation(fields: [sportId], references: [sportId])
+    apiGameId              String                   @map("api_game_id") @db.Text()
+    data                   Json?                    @map("data") @db.JsonB
+    startDate              DateTime?                @default(now()) @map("start_date")
+    apiSourceId            Int                      @map("api_source_id")
+    apiSources             ApiSources               @relation(fields: [apiSourceId], references: [apiSourceId])
+    processingStatus       TxnStatus?               @default(Pending) @map("processing_status")
+    createdAt              DateTime                 @default(now()) @map("created_at")
+    updatedAt              DateTime                 @updatedAt @map("updated_at")
+    gamesStats             GamesStats?
+    teamsStats             TeamsStats[]
+    playersStats           PlayersStats[]
+    challenges             Challenges[]
+    pickemChallengeLineups PickemChallengeLineups[]
+    teamInGame             TeamInGame[]
+    gameOdds               GameOdds[]
+    betOdds                BetOdds[]
+
+    @@unique([sportId, apiGameId])
+    @@index([apiGameId, sportId])
+    @@map("games")
+    @@schema("sport")
+}
+
+model Teams {
+    teamId                 Int                      @id @default(autoincrement()) @map("team_id")
+    teamName               String                   @map("team_name") @db.Text()
+    sportId                Int                      @map("sport_id")
+    sport                  Sports                   @relation(fields: [sportId], references: [sportId])
+    apiTeamId              String                   @map("api_team_id") @db.Text()
+    status                 Status                   @default(Inactive) @map("status")
+    createdAt              DateTime                 @default(now()) @map("created_at")
+    updatedAt              DateTime                 @updatedAt @map("updated_at")
+    players                Players[]
+    playerInTeam           PlayerInTeam[]
+    teamsStats             TeamsStats[]
+    challenges             Challenges[]
+    pickemChallengeLineups PickemChallengeLineups[]
+    teamInLeague           TeamInLeague[]
+    teamInGame             TeamInGame[]
+    homeGames              GameOdds[]               @relation("HomeTeam")
+    awayGames              GameOdds[]               @relation("AwayTeam")
+
+    @@unique([sportId, apiTeamId])
+    @@unique([apiTeamId, sportId])
+    @@index([apiTeamId, sportId])
+    @@map("teams")
+    @@schema("sport")
+}
+
+model Players {
+    playerId      Int             @id @default(autoincrement()) @map("player_id")
+    firstName     String          @map("first_name") @db.Text()
+    lastName      String          @map("last_name") @db.Text()
+    sportId       Int             @map("sport_id")
+    sport         Sports          @relation(fields: [sportId], references: [sportId])
+    apiPlayerId   String          @map("api_player_id") @db.Text()
+    apiTeamId     String          @map("api_team_id") @db.Text()
+    team          Teams           @relation(fields: [apiTeamId, sportId], references: [apiTeamId, sportId])
+    data          Json            @map("data") @db.JsonB
+    isActive      Boolean         @map("is_active")
+    createdAt     DateTime        @default(now()) @map("created_at")
+    updatedAt     DateTime        @updatedAt @map("updated_at")
+    playerInSport PlayerInSport[]
+    playerInTeam  PlayerInTeam[]
+    playersStats  PlayersStats[]
+    challenges    Challenges[]
+
+    @@unique([sportId, apiPlayerId])
+    @@index([apiPlayerId, sportId])
+    @@map("players")
+    @@schema("sport")
+}
+
+model TeamInLeague {
+    teamId    Int      @map("team_id")
+    teams     Teams    @relation(fields: [teamId], references: [teamId])
+    leagueId  Int      @map("league_id")
+    leagues   Leagues  @relation(fields: [leagueId], references: [leagueId])
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@id([teamId, leagueId])
+    @@index([teamId])
+    @@map("team_in_league")
+    @@schema("sport")
+}
+
+model TeamInGame {
+    teamId    Int      @map("team_id")
+    teams     Teams    @relation(fields: [teamId], references: [teamId])
+    gameId    Int      @map("game_id")
+    games     Games    @relation(fields: [gameId], references: [gameId])
+    notes     String   @map("notes") @db.Text()
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@id([teamId, gameId])
+    @@map("team_in_game")
+    @@schema("sport")
+}
+
+model PlayerInSport {
+    playerId  Int      @map("player_id")
+    players   Players  @relation(fields: [playerId], references: [playerId])
+    sportId   Int      @map("sport_id")
+    sports    Sports   @relation(fields: [sportId], references: [sportId])
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@id([playerId, sportId])
+    @@map("player_in_sport")
+    @@schema("sport")
+}
+
+model PlayerInTeam {
+    playerId  Int      @map("player_id")
+    players   Players  @relation(fields: [playerId], references: [playerId])
+    seasonId  Int      @map("season_id")
+    seasons   Seasons  @relation(fields: [seasonId], references: [seasonId])
+    teamId    Int      @map("team_id")
+    teams     Teams    @relation(fields: [teamId], references: [teamId])
+    notes     String?  @map("notes") @db.Text()
+    jnumber   Int?     @map("jnumber")
+    position  String?  @map("position")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@id([playerId, teamId, seasonId])
+    @@map("player_in_team")
+    @@schema("sport")
+}
+
+model GamesStats {
+    apiGameId String   @map("api_game_id") @db.Text()
+    games     Games    @relation(fields: [apiGameId, sportId], references: [apiGameId, sportId])
+    sportId   Int      @map("sport_id")
+    sports    Sports   @relation(fields: [sportId], references: [sportId])
+    gameStats Json     @map("game_stats") @db.JsonB
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@id([apiGameId, sportId])
+    @@index([apiGameId, sportId])
+    @@map("games_stats")
+    @@schema("sport")
+}
+
+model TeamsStats {
+    apiGameId String   @map("api_game_id") @db.Text()
+    games     Games    @relation(fields: [apiGameId, sportId], references: [apiGameId, sportId])
+    apiTeamId String   @map("api_team_id") @db.Text()
+    teams     Teams    @relation(fields: [apiTeamId, sportId], references: [apiTeamId, sportId])
+    sportId   Int      @map("sport_id")
+    sports    Sports   @relation(fields: [sportId], references: [sportId])
+    teamStats Json     @map("team_stats") @db.JsonB
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@id([sportId, apiGameId, apiTeamId])
+    @@index([sportId, apiGameId, apiTeamId])
+    @@map("teams_stats")
+    @@schema("sport")
+}
+
+model PlayersStats {
+    apiGameId   String   @map("api_game_id") @db.Text()
+    games       Games    @relation(fields: [apiGameId, sportId], references: [apiGameId, sportId])
+    apiPlayerId String   @map("api_player_id") @db.Text()
+    players     Players  @relation(fields: [apiPlayerId, sportId], references: [apiPlayerId, sportId])
+    sportId     Int      @map("sport_id")
+    sports      Sports   @relation(fields: [sportId], references: [sportId])
+    playerStats Json     @map("player_stats") @db.JsonB
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+
+    @@id([sportId, apiGameId, apiPlayerId])
+    @@index([sportId, apiGameId, apiPlayerId])
+    @@map("players_stats")
+    @@schema("sport")
+}
+
+model Bookmakers {
+    bookmakerId    Int       @id @default(autoincrement()) @map("bookmaker_id")
+    sportId        Int       @map("sport_id")
+    sports         Sports    @relation(fields: [sportId], references: [sportId])
+    bookmakerName  String    @map("bookmaker_name") @db.Text()
+    bookmakerApiId Int       @map("bookmaker_api_id")
+    logoUrl        String?   @map("logo_url") @db.Text()
+    createdAt      DateTime  @default(now()) @map("created_at")
+    updatedAt      DateTime  @updatedAt @map("updated_at")
+    betOdds        BetOdds[]
+
+    @@map("bookmakers")
+    @@schema("sport")
+}
+
+model BetOdds {
+    sportId          Int        @map("sport_id")
+    sports           Sports     @relation(fields: [sportId], references: [sportId])
+    gameId           Int        @map("game_id")
+    games            Games      @relation(fields: [gameId], references: [gameId])
+    bookmakerId      Int        @map("bookmaker_id")
+    bookmakers       Bookmakers @relation(fields: [bookmakerId], references: [bookmakerId])
+    apiCategoryId    String     @map("api_category_id") @db.Text()
+    oddsType         String     @map("odds_type") @db.Text()
+    spreadVal        String     @default("(0)") @map("spread_val") @db.Text()
+    threshold        Decimal    @default(0) @map("threshold")
+    decimalOddsValue Decimal    @map("decimal_odds_value")
+    apiLastUpdated   DateTime   @default(now()) @map("api_last_updated")
+    status           Status     @default(Active) @map("status")
+    moneyline        Decimal    @map("moneyline")
+    fraction         String     @map("fraction")
+    indonesian       Decimal    @map("indonesian")
+    hongkong         Decimal    @map("hongkong")
+    malaysian        Decimal    @map("malaysian")
+    createdAt        DateTime   @default(now()) @map("created_at")
+    updatedAt        DateTime   @updatedAt @map("updated_at")
+
+    @@id([sportId, gameId, bookmakerId, apiCategoryId, oddsType, spreadVal, threshold, decimalOddsValue])
+    @@index([sportId, gameId, bookmakerId, apiCategoryId, oddsType, spreadVal, threshold, decimalOddsValue])
+    @@map("bet_odds")
+    @@schema("sport")
+}
+
+// Sport schema ends here
+
+// Challenge schema starts here
+
+model Contracts {
+    contractId              Int                       @id @default(autoincrement()) @map("contract_id")
+    contractType            ContractType              @map("contract_type")
+    contractAddress         String                    @map("contract_address") @db.Text()
+    tokenName               String?                   @map("token_name") @db.Text()
+    status                  Status                    @default(Active) @map("status")
+    resourceUrl             String?                   @map("resource_url") @db.Text()
+    networkId               Int                       @map("network_id")
+    networks                BlockchainNetworks        @relation(fields: [networkId], references: [networkId])
+    abiFile                 Json?                     @map("abi_file") @db.JsonB
+    note                    String?                   @db.Text()
+    decimals                Int?
+    createdAt               DateTime                  @default(now()) @map("created_at")
+    updatedAt               DateTime                  @updatedAt @map("updated_at")
+    challengeParticipations ChallengeParticipations[]
+    scTransactions          ScTransactions[]
+    contractDataFeed        ContractDataFeed[]
+    challenges              Challenges[]
+
+    @@map("contracts")
+    @@schema("challenge")
+}
+
+model BlockchainNetworks {
+    networkId Int         @id @default(autoincrement()) @map("network_id")
+    name      String      @unique @map("name") @db.Text()
+    createdAt DateTime    @default(now()) @map("created_at")
+    updatedAt DateTime    @updatedAt @map("updated_at")
+    contracts Contracts[]
+
+    @@map("blockchain_networks")
+    @@schema("challenge")
+}
+
+model ScTransactions {
+    id         Int       @id @default(autoincrement()) @map("id")
+    contractId Int       @map("contract_id")
+    contracts  Contracts @relation(fields: [contractId], references: [contractId])
+    rawData    Json      @map("raw_data") @db.JsonB
+    createdAt  DateTime  @default(now()) @map("created_at")
+    updatedAt  DateTime  @updatedAt @map("updated_at")
+
+    @@map("sc_transactions")
+    @@schema("challenge")
+}
+
+model Challenges {
+    challengeId             Int                       @id @default(autoincrement()) @map("challenge_id")
+    challengeName           String                    @map("challenge_name") @db.Text()
+    scChallengeId           String?                   @map("sc_challenge_id") @db.Text()
+    inviteCode              String                    @unique @map("invite_code") @db.Text()
+    creatorAccountId        String                    @map("creator_account_id") @db.Text()
+    creator                 Users                     @relation(fields: [creatorAccountId], references: [userId])
+    challengeMode           ChallengeMode             @map("challenge_mode")
+    challengeType           ChallengeType             @map("challenge_type")
+    sportId                 Int                       @map("sport_id")
+    sport                   Sports                    @relation(fields: [sportId], references: [sportId])
+    gameId                  Int                       @map("game_id")
+    games                   Games                     @relation(fields: [gameId], references: [gameId])
+    teamId                  Int?                      @map("team_id")
+    teams                   Teams?                    @relation(fields: [teamId], references: [teamId])
+    playerId                Int?                      @map("player_id")
+    Players                 Players?                  @relation(fields: [playerId], references: [playerId])
+    oddsFlag                Boolean                   @default(false) @map("odds_flag")
+    multiTokenFlag          Boolean                   @default(false) @map("multi_token_flag")
+    challengeValueQty       Decimal                   @map("challenge_value_qty")
+    challengeValueUsd       Decimal?                  @map("challenge_value_usd")
+    startDate               DateTime                  @map("start_date")
+    endDate                 DateTime                  @map("end_date")
+    finalOutcome            Outcome?                  @map("final_outcome")
+    challengeDepth          CategoryDepth?            @map("challenge_depth")
+    pickem                  String?                   @map("pickem") @db.Text()
+    pickemScoreMode         PickemScoreMode?          @map("pickem_score_mode") 
+    contractId              Int?                      @map("contract_id")
+    contracts               Contracts?                @relation(fields: [contractId], references: [contractId])
+    status                  ChallengeStatus?          @map("status")
+    reasonCode              String?                   @map("reason_code") @db.Text()
+    shareStatus             ShareStatus?              @map("share_status")
+    processingStatus        TxnStatus?                @map("processing_status")
+    createdAt               DateTime                  @default(now()) @map("created_at")
+    updatedAt               DateTime                  @updatedAt @map("updated_at")
+    challengeParticipations ChallengeParticipations[]
+    challengeResults        ChallengeResults[]
+    contractDataFeed        ContractDataFeed[]
+    pickemChallengeLineups  PickemChallengeLineups[]
+    favorites               Favorites[]
+
+    @@index([creatorAccountId])
+    @@index([inviteCode])
+    @@map("challenges")
+    @@schema("challenge")
+}
+
+model ChallengeParticipations {
+    participationId         Int                           @id @default(autoincrement()) @map("participation_id")
+    challengeId             Int                           @map("challenge_id")
+    challenges              Challenges                    @relation(fields: [challengeId], references: [challengeId])
+    challengeGroupId        Int                           @map("challenge_group_id")
+    challengeGroups         ChallengeGroups               @relation(fields: [challengeGroupId], references: [challengeGroupId])
+    paidWalletAddress       String                        @map("paid_wallet_address") @db.Text()
+    walletAddress           Users                         @relation(fields: [paidWalletAddress], references: [walletAddress])
+    challengeResultId       Int?                          @map("challenge_result_id")
+    challengeResults        ChallengeResults?             @relation(fields: [challengeResultId], references: [challengeResultId])
+    oddsFlag                Boolean                       @default(false) @map("odds_flag")
+    participantOdds         Decimal?                      @map("participant_odds")
+    multiTokenFlag          Boolean                       @default(false) @map("multi_token_flag")
+    contractId              Int                           @map("contract_id")
+    contracts               Contracts?                    @relation(fields: [contractId], references: [contractId])
+    exchangeRate            Decimal?                      @map("exchange_rate")
+    participationValueQty   Decimal                       @map("participation_value_qty")
+    participationValueUsd   Decimal?                      @map("participation_value_usd")
+    participantInputQty     Decimal?                      @map("participant_input_qty")
+    participantInputUsd     Decimal?                      @map("participant_input_usd")
+    participationWinLossQty Decimal?                      @map("participation_win_loss_qty")
+    participationWinLossUsd Decimal?                      @map("participation_win_loss_usd")
+    challengeDepth          CategoryDepth?                @map("challenge_depth")
+    participantRole         ParticipantRole               @default(Participant) @map("participant_role")
+    status                  ChallengeParticipationStatus? @map("status")
+    createdAt               DateTime                      @default(now()) @map("created_at")
+    updatedAt               DateTime                      @updatedAt @map("updated_at")
+
+    @@index([challengeId])
+    @@index([paidWalletAddress])
+    @@map("challenge_participations")
+    @@schema("challenge")
+}
+
+model ChallengeResults {
+    challengeResultId       Int                       @id @default(autoincrement()) @map("challenge_result_id")
+    challengeId             Int                       @map("challenge_id")
+    challenge               Challenges                @relation(fields: [challengeId], references: [challengeId])
+    sportId                 Int?                      @map("sport_id")
+    sport                   Sports?                   @relation(fields: [sportId], references: [sportId])
+    categoryId              Int?                      @map("category_id")
+    category                Categories?               @relation(fields: [categoryId], references: [categoryId])
+    groupId                 Int?                      @map("group_id")
+    groups                  Groups?                   @relation(fields: [groupId], references: [groupId])
+    subgroupId              Int?                      @map("subgroup_id")
+    subgroups               Subgroups?                @relation(fields: [subgroupId], references: [subgroupId])
+    spreadPoints            Decimal?                  @default(0) @map("spread_points")
+    winCriteria             Int?                      @map("win_criteria")
+    participantStatP1       Decimal?                  @map("participant_stat_p1")
+    participantStatP2       Decimal?                  @map("participant_stat_p2")
+    publishedStatP1         Decimal?                  @map("published_stat_p1")
+    publishedStatP2         Decimal?                  @map("published_stat_p2")
+    differenceP1            Decimal?                  @map("difference_p1")
+    differenceP2            Decimal?                  @map("difference_p2")
+    statAttribute           String?                   @map("stat_attribute") @db.Text()
+    totalScore              Decimal?                  @default(0) @map("total_score")
+    participantOutcome      Outcome?                  @map("participant_outcome")
+    finalOutcome            Outcome?                  @map("final_outcome")
+    participantPosition     Int?                      @map("participant_position")
+    createdAt               DateTime                  @default(now()) @map("created_at")
+    updatedAt               DateTime                  @updatedAt @map("updated_at")
+    challengeParticipations ChallengeParticipations[]
+    pickemChallengeLineups  PickemChallengeLineups[]
+
+    @@index([challengeId])
+    @@map("challenge_results")
+    @@schema("challenge")
+}
+
+model PickemChallengeLineups {
+    id                Int               @id @default(autoincrement()) @map("id")
+    challengeId       Int               @map("challenge_id")
+    challenges        Challenges        @relation(fields: [challengeId], references: [challengeId])
+    challengeResultId Int?              @map("challenge_result_id")
+    challengeResults  ChallengeResults? @relation(fields: [challengeResultId], references: [challengeResultId])
+    pickTeamId        Int?              @map("pick_team_id")
+    teams             Teams?            @relation(fields: [pickTeamId], references: [teamId])
+    spreadPoints      Decimal?          @map("spread_points")
+    participantScore  Decimal           @default(0) @map("participant_score")
+    gameId            Int               @map("game_id")
+    games             Games             @relation(fields: [gameId], references: [gameId])
+    pickStatus        Status            @map("pick_status")
+    processingStatus  TxnStatus?        @default(Pending) @map("processing_status")
+    createdAt         DateTime          @default(now()) @map("created_at")
+    updatedAt         DateTime          @updatedAt @map("updated_at")
+
+    @@index([challengeResultId, gameId])
+    @@map("pickem_challenge_lineups")
+    @@schema("challenge")
+}
+
+model ChallengeGroups {
+    challengeGroupId           Int                          @id @default(autoincrement()) @map("challenge_group_id")
+    createdAt                  DateTime                     @default(now()) @map("created_at")
+    updatedAt                  DateTime                     @updatedAt @map("updated_at")
+    challengeGroupParticipants ChallengeGroupParticipants[]
+    challengeParticipations    ChallengeParticipations[]
+
+    @@map("challenge_groups")
+    @@schema("challenge")
+}
+
+model ChallengeGroupParticipants {
+    challengeGroupId Int             @map("challenge_group_id")
+    challengeGroups  ChallengeGroups @relation(fields: [challengeGroupId], references: [challengeGroupId])
+    userId           String          @map("user_id") @db.Text()
+    users            Users           @relation(fields: [userId], references: [userId])
+    createdAt        DateTime        @default(now()) @map("created_at")
+    updatedAt        DateTime        @updatedAt @map("updated_at")
+
+    @@id([challengeGroupId, userId])
+    @@map("challenge_group_participants")
+    @@schema("challenge")
+}
+
+model Categories {
+    categoryId       Int                @id @default(autoincrement()) @map("category_id")
+    categoryApiTitle String             @map("category_api_title") @db.Text()
+    categoryExtTitle String             @map("category_ext_title") @db.Text()
+    depth            CategoryDepth      @map("depth")
+    challengeMode    Json?              @map("challenge_mode") @db.Json()
+    status           Status             @default(Inactive) @map("status")
+    createdAt        DateTime           @default(now()) @map("created_at")
+    updatedAt        DateTime           @updatedAt @map("updated_at")
+    categoriesGroups CategoriesGroups[]
+    challengeResults ChallengeResults[]
+    sportInCategory  SportInCategory[]
+
+    @@unique(name: "category_depth", [categoryApiTitle, depth])
+    @@index([categoryApiTitle, categoryExtTitle])
+    @@map("categories")
+    @@schema("challenge")
+}
+
+model Groups {
+    groupId          Int                @id @default(autoincrement()) @map("group_id")
+    groupApiTitle    String             @map("group_api_title") @db.Text()
+    groupExtTitle    String             @map("group_ext_title") @db.Text()
+    status           Status             @default(Inactive) @map("status")
+    createdAt        DateTime           @default(now()) @map("created_at")
+    updatedAt        DateTime           @updatedAt @map("updated_at")
+    groupAttributes  Json?              @map("group_attributes")
+    logicCode        String?            @map("logic_code") @db.Text
+    apiCategoryId    Json?              @map("api_category_id")
+    categoriesGroups CategoriesGroups[]
+    challengeResults ChallengeResults[]
+    GroupsSubgroups  GroupsSubgroups[]
+
+    @@unique(name: "group_logic_code", [groupApiTitle, logicCode])
+    @@map("groups")
+    @@schema("challenge")
+}
+
+model Subgroups {
+    subgroupId       Int                @id @default(autoincrement()) @map("subgroup_id")
+    subgroupApiTitle String             @map("subgroup_api_title") @db.Text()
+    subgroupExtTitle String             @map("subgroup_ext_title") @db.Text()
+    status           Status             @default(Inactive) @map("status")
+    createdAt        DateTime           @default(now()) @map("created_at")
+    updatedAt        DateTime           @updatedAt @map("updated_at")
+    challengeResults ChallengeResults[]
+    GroupsSubgroups  GroupsSubgroups[]
+
+    @@unique([subgroupApiTitle, subgroupExtTitle])
+    @@map("subgroups")
+    @@schema("challenge")
+}
+
+model GroupsSubgroups {
+    groupId    Int       @map("group_id")
+    groups     Groups    @relation(references: [groupId], fields: [groupId])
+    subgroupId Int       @map("subgroup_id")
+    subGroups  Subgroups @relation(references: [subgroupId], fields: [subgroupId])
+
+    @@unique([groupId, subgroupId])
+    @@map("groups_subgroups")
+    @@schema("challenge")
+}
+
+model SportInCategory {
+    categoryId Int        @map("category_id")
+    category   Categories @relation(fields: [categoryId], references: [categoryId])
+    sportId    Int        @map("sport_id")
+    sports     Sports     @relation(fields: [sportId], references: [sportId])
+    createdAt  DateTime   @default(now()) @map("created_at")
+    updatedAt  DateTime   @updatedAt @map("updated_at")
+
+    @@id([categoryId, sportId])
+    @@map("sport_in_category")
+    @@schema("challenge")
+}
+
+model CategoriesGroups {
+    categoryId Int           @map("category_id")
+    category   Categories    @relation(fields: [categoryId], references: [categoryId])
+    groupId    Int           @map("group_id")
+    groups     Groups        @relation(fields: [groupId], references: [groupId])
+    depth      CategoryDepth @map("depth")
+    createdAt  DateTime      @default(now()) @map("created_at")
+    updatedAt  DateTime      @updatedAt @map("updated_at")
+    sportId    Int           @default(1) @map("sport_id")
+    sports     Sports        @relation(fields: [sportId], references: [sportId])
+
+    @@id([categoryId, groupId, sportId])
+    @@map("categories_groups")
+    @@schema("challenge")
+}
+
+model ContractDataFeed {
+    contractDataFeedId Int         @id @default(autoincrement()) @map("contract_data_feed_id")
+    challengeId        Int?        @map("challenge_id")
+    challenges         Challenges? @relation(fields: [challengeId], references: [challengeId])
+    walletAddress      String?     @map("wallet_address") @db.Text()
+    users              Users?      @relation(fields: [walletAddress], references: [walletAddress])
+    participantOutcome Outcome?    @map("participant_outcome")
+    finalOutcome       Outcome?    @map("final_outcome")
+    contractId         Int?        @map("contract_id")
+    contracts          Contracts?  @relation(fields: [contractId], references: [contractId])
+    tokenStakedQty     Decimal?    @map("token_staked_qty")
+    scChallengeId      String?     @map("sc_challenge_id") @db.Text()
+    transactionHash    String?     @map("transaction_hash") @db.Text()
+    event              CdfEvent?   @map("event")
+    execCount          Int?        @map("exec_count")
+    status             TxnStatus?  @map("status")
+    createdAt          DateTime    @default(now()) @map("created_at")
+    updatedAt          DateTime    @updatedAt @map("updated_at")
+
+    @@index([challengeId])
+    @@map("contract_data_feed")
+    @@schema("challenge")
+}
+
+model GameOdds {
+    gameDate       DateTime   @default(now()) @map("game_date")
+    homeTeamName   String     @map("home_team_name") @db.Text()
+    homeTeamId     Int        @map("home_team_id")
+    homeTeam       Teams      @relation("HomeTeam", fields: [homeTeamId], references: [teamId])
+    awayTeamName   String     @map("away_team_name") @db.Text()
+    awayTeamId     Int        @map("away_team_id")
+    awayTeam       Teams      @relation("AwayTeam", fields: [awayTeamId], references: [teamId])
+    bookmakerTitle String?    @map("bookmaker_title") @db.Text()
+    odds           Json       @db.Json
+    apiSourceId    Int        @map("api_source_id")
+    apiSources     ApiSources @relation(fields: [apiSourceId], references: [apiSourceId])
+    gameId         Int        @map("game_id")
+    games          Games      @relation(fields: [gameId], references: [gameId])
+    createdAt      DateTime   @default(now()) @map("created_at")
+    updatedAt      DateTime   @updatedAt @map("updated_at")
+
+    @@id([homeTeamName, awayTeamName, gameDate])
+    @@index([homeTeamName, awayTeamName, gameDate])
+    @@map("game_odds")
+    @@schema("challenge")
+}
+
+// Challenge schema ends here
+
+// Quest Schema starts here
+
+model Quests {
+    questId         String       @id @unique @map("quest_id") @db.Text
+    questTitle      String       @unique @map("quest_title") @db.Text
+    status          Status       @default(Active)
+    description     String       @db.Text
+    reward          Json
+    maxRecurrence   Int          @map("max_recurrance")
+    qualifyLevel    Int[]        @default([]) @map("qualify_level")
+    relatedQuestIds String[]     @default([]) @map("related_quest_ids")
+    validFrom       DateTime?    @map("valid_from")
+    validUntil      DateTime?    @map("valid_until")
+    durationMinutes Int?         @map("duration_minutes")
+    createdAt       DateTime     @default(now()) @map("created_at")
+    updatedAt       DateTime     @updatedAt @map("updated_at")
+    skipLogic       Boolean      @default(false) @map("skip_logic")
+    UserQuests      UserQuests[]
+    Goals           Goals[]
+
+    @@index([questTitle, questId, status])
+    @@map("quests")
+    @@schema("quest")
+}
+
+model Goals {
+    goalId         String           @id @default(uuid()) @map("goal_id")
+    questId        String           @map("quest_id")
+    quest          Quests           @relation(references: [questId], fields: [questId])
+    goalSource     String           @map("goal_source")
+    description    String           @db.Text
+    target         Int
+    negativeSource String?          @map("negative_source")
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime         @updatedAt @map("updated_at")
+    UserQuestGoals UserQuestGoals[]
+
+    @@unique([questId, goalSource])
+    @@index([goalSource])
+    @@index([negativeSource])
+    @@index([questId])
+    @@map("goals")
+    @@schema("quest")
+}
+
+model UserQuests {
+    userQuestId       String              @id @default(uuid()) @map("user_quest_id")
+    questId           String              @map("quest_id")
+    quest             Quests              @relation(fields: [questId], references: [questId])
+    userId            String              @map("user_id")
+    user              Users               @relation(fields: [userId], references: [userId])
+    completedAt       DateTime?           @map("completed_at")
+    expiresAt         DateTime?           @map("expires_at")
+    createdAt         DateTime            @default(now()) @map("created_at")
+    updatedAt         DateTime            @updatedAt @map("updated_at")
+    QuestRewardLedger QuestRewardLedger[]
+    UserQuestGoals    UserQuestGoals[]
+
+    @@index([questId, userId])
+    @@map("user_quests")
+    @@schema("quest")
+}
+
+model UserQuestGoals {
+    userQuestGoalId String     @id @default(uuid()) @map("user_quest_goal_id")
+    userQuestId     String     @map("user_quest_id")
+    userQuest       UserQuests @relation(references: [userQuestId], fields: [userQuestId])
+    goalId          String     @map("goal_id")
+    goal            Goals      @relation(references: [goalId], fields: [goalId])
+    progress        Int
+    createdAt       DateTime   @default(now()) @map("created_at")
+    updatedAt       DateTime   @updatedAt @map("updated_at")
+
+    @@unique([userQuestId, goalId])
+    @@index([userQuestId, goalId])
+    @@map("user_quest_goals")
+    @@schema("quest")
+}
+
+model QuestRewardLedger {
+    ledgerId      String     @id @default(uuid()) @map("ledger_id")
+    userId        String     @map("user_id")
+    user          Users      @relation(fields: [userId], references: [userId])
+    userQuestId   String     @map("user_quest_id")
+    userQuest     UserQuests @relation(fields: [userQuestId], references: [userQuestId])
+    pointsRateUsd Decimal    @map("points_rate_usd")
+    points        Decimal
+    pointsBalance Decimal    @map("points_balance")
+    createdAt     DateTime   @default(now()) @map("created_at")
+
+    @@index([userId, userQuestId])
+    @@map("quest_reward_ledger")
+    @@schema("quest")
+}
+
+// Quest Schema ends here
+
+enum Status {
+    Active
+    Inactive
+    Restricted
+
+    @@schema("sport")
+}
+
+enum ContractType {
+    Sport
+    Token
+    Staking
+
+    @@schema("challenge")
+}
+
+enum CategoryDepth {
+    Pickem
+    DayPickem
+    WeekPickem
+    Game
+    Team
+    Player
+
+    @@schema("challenge")
+}
+
+enum ChallengeStatus {
+    AuthPending
+    Pending
+    Ready
+    InProgress
+    Completed
+    Cancelled
+
+    @@schema("challenge")
+}
+
+enum ChallengeParticipationStatus {
+    Active
+    Inactive
+    Withdrawn
+
+    @@schema("challenge")
+}
+
+enum Outcome {
+    Win
+    Lose
+    CancelledOrDraw
+
+    @@schema("challenge")
+}
+
+enum ChallengeMode {
+    OneVsOne
+    Group
+    Partial
+
+    @@schema("challenge")
+}
+
+enum ChallengeType {
+    Private
+    Public
+
+    @@schema("challenge")
+}
+
+enum CdfEvent {
+    Create
+    Join
+    InProgress
+    Withdraw
+    CancelledOrDraw
+    OutcomePublished
+    Upstake
+
+    @@schema("challenge")
+}
+
+enum TxnStatus {
+    Pending
+    InProgress
+    Success
+    Failed
+
+    @@schema("challenge")
+}
+
+enum GameStatus {
+    Cancelled
+    Closed
+    InProgress
+    Interrupted
+    Postponed
+    Scheduled
+
+    @@schema("sport")
+}
+
+enum ShareStatus {
+    Sent
+    Converted
+    Approved
+    Rejected
+    Cancelled
+
+    @@schema("challenge")
+}
+
+enum ParticipantRole {
+    Creator
+    Participant
+    Initiator
+    Initializer
+
+    @@schema("challenge")
+}
+
+enum BlockLevel {
+    Country
+    State
+    City
+
+    @@schema("user")
+}
+
+enum PickemScoreMode {
+    OutrightWinner
+    WinnerBySpread
+
+    @@schema("challenge")
+}

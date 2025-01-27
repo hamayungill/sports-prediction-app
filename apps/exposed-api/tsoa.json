@@ -1,0 +1,29 @@
+{
+  "entryFile": "src/index.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/controllers/v1/*.ts", "src/controllers/v2/*.ts"],
+  "spec": {
+    "outputDirectory": "./src/swagger",
+    "specVersion": 3,
+    "securityDefinitions": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "spec": {
+      "servers": [
+        {
+          "url": "http://localhost:8000",
+          "description": "Local development server"
+        }
+      ]
+    }
+  },
+  "routes": {
+    "middleware": "express",
+    "routesDir": "./src/routes",
+    "authenticationModule": "./src/middleware/authentication.ts"
+  }
+}

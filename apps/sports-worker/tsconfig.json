@@ -1,0 +1,12 @@
+{
+    "extends": "@duelnow/tsconfig/base.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "lib": [
+            "esnext",
+        ]
+    },
+    "exclude": [
+        "dist"
+    ]
+}

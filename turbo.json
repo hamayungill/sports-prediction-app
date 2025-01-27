@@ -1,0 +1,105 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "**/.env.*local",
+    "**/.env.schema"
+  ],
+  "globalEnv": [
+    "SC_ADMIN_PRIVATE_KEY",
+    "COINGECKO_API_KEY",
+    "COINGECKO_API_URL",
+    "DB_URL",
+    "ENABLE_SWAGGER",
+    "INFURA_JWT_KEY_ID",
+    "INFURA_JWT_PRIVATE_KEY",
+    "EMAIL_VERIFY_BASE_URL",
+    "GITHUB_ACTIONS",
+    "KAFKA_BROKER_URLS",
+    "KAFKA_REDIS_URL",
+    "LOG_LEVEL",
+    "LOGZIO_TOKEN",
+    "NODE_ENV",
+    "ODDS_API_TIMESTAMP_OFFSET_MARGIN_MIN",
+    "INFURA_API_KEY",
+    "IPDATA_API_KEY",
+    "SYSTEM_IP"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build",
+        "db:generate",
+        "swagger",
+        "routes:gen"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.local"
+      ]
+    },
+    "db:generate": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:migrate:dev": {
+      "cache": false
+    },
+    "db:migrate:prod": {
+      "cache": false
+    },
+    "db:seed": {
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": [
+        "^build",
+        "db:generate",
+        "lint:fix"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": [
+        "^build",
+        "swagger",
+        "routes:gen"
+      ]
+    },
+    "lint:fix": {
+      "dependsOn": [
+        "^build",
+        "swagger",
+        "routes:gen"
+      ],
+      "cache": false
+    },
+    "routes:gen": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "start": {
+      "persistent": true
+    },
+    "swagger": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  }
+}

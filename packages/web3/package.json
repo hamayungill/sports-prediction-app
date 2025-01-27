@@ -1,0 +1,43 @@
+{
+  "name": "@duelnow/web3",
+  "version": "1.0.5",
+  "description": "",
+  "main": "./dist/index.js",
+  "source": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "npx jest --coverage --colors --passWithNoTests",
+    "lint": "tsc --noEmit && eslint . --ext=.js,.ts,.json",
+    "lint:fix": "eslint . --ext=.js,.ts,.json --fix",
+    "build": "tsc -b"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@duelnow/eslint-config": "*",
+    "@duelnow/tsconfig": "*",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
+  },
+  "dependencies": {
+    "@duelnow/axios-extended": "*",
+    "@duelnow/kafka-client": "*",
+    "@duelnow/logger": "*",
+    "@duelnow/rates": "*",
+    "@duelnow/redis": "*",
+    "@duelnow/utils": "*",
+    "@openzeppelin/merkle-tree": "^1.0.7",
+    "jose": "^5.2.1",
+    "web3": "4.6.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "verbose": true,
+    "maxWorkers": 1
+  }
+}

@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "logs/cron-worker/.237d481be4c6e753931d92cc65ee2d7f623f00e7-audit.json",
+    "files": [
+        {
+            "date": 1732887165323,
+            "name": "logs/cron-worker/cron-worker_application_2024_11_29.log",
+            "hash": "3fc40377cf665b3981cb6416ccdc55a672347711766a44823784eb4cbc032073"
+        }
+    ],
+    "hashType": "sha256"
+}

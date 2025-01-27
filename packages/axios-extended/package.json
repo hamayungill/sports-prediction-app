@@ -1,0 +1,34 @@
+{
+  "name": "@duelnow/axios-extended",
+  "version": "1.0.1",
+  "description": "",
+  "main": "./dist/index.js",
+  "source": "./index.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "npx jest --coverage --colors"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@duelnow/logger": "*",
+    "@duelnow/utils": "*",
+    "axios": "^1.6.5"
+  },
+  "devDependencies": {
+    "@duelnow/eslint-config": "*",
+    "@duelnow/tsconfig": "*",
+    "axios-mock-adapter": "^2.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "verbose": true,
+    "maxWorkers": 1
+  }
+}

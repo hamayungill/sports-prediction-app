@@ -1,0 +1,41 @@
+{
+  "name": "web3-worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "npx jest --coverage --colors --passWithNoTests",
+    "dev": "nodemon src/runWorker.ts",
+    "build": "tsc -b",
+    "lint": "tsc --noEmit && eslint 'src/**/*.ts'",
+    "lint:fix": "eslint 'src/**/*.ts' --fix",
+    "start": "node dist/runWorker.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@duelnow/database": "*",
+    "@duelnow/kafka-client": "*",
+    "@duelnow/logger": "*",
+    "@duelnow/utils": "*",
+    "kafkajs": "^2.2.4",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@duelnow/eslint-config": "*",
+    "@duelnow/tsconfig": "*",
+    "@types/lodash": "^4.17.13",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.0.5"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "verbose": true,
+    "maxWorkers": 1
+  }
+}

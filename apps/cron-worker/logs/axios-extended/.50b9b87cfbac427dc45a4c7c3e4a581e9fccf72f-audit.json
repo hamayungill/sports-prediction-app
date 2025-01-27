@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "logs/axios-extended/.50b9b87cfbac427dc45a4c7c3e4a581e9fccf72f-audit.json",
+    "files": [
+        {
+            "date": 1732887165065,
+            "name": "logs/axios-extended/axios-extended_exceptions_2024_11_29.log",
+            "hash": "9be28652de3300a200897d5835a932312909fd6c29c8be2dbc800f41e0e555d6"
+        }
+    ],
+    "hashType": "sha256"
+}

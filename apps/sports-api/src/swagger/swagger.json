@@ -1,0 +1,1875 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Record_string.any_": {
+				"properties": {},
+				"additionalProperties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"Record_any.any_": {
+				"properties": {},
+				"additionalProperties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"ResponsePayload": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"data": {
+						"$ref": "#/components/schemas/Record_string.any_"
+					},
+					"message": {
+						"type": "string"
+					},
+					"pagination": {
+						"$ref": "#/components/schemas/Record_any.any_"
+					},
+					"status": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ApiResponse": {
+				"properties": {
+					"resCode": {
+						"type": "number",
+						"format": "double"
+					},
+					"resData": {
+						"$ref": "#/components/schemas/ResponsePayload"
+					}
+				},
+				"required": [
+					"resCode",
+					"resData"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.ChallengeMode": {
+				"type": "string",
+				"enum": [
+					"OneVsOne",
+					"Group",
+					"Partial"
+				]
+			},
+			"ChallengeMode": {
+				"$ref": "#/components/schemas/_36_Enums.ChallengeMode"
+			},
+			"_36_Enums.ChallengeType": {
+				"type": "string",
+				"enum": [
+					"Private",
+					"Public"
+				]
+			},
+			"ChallengeType": {
+				"$ref": "#/components/schemas/_36_Enums.ChallengeType"
+			},
+			"_36_Enums.Outcome": {
+				"type": "string",
+				"enum": [
+					"Win",
+					"Lose",
+					"CancelledOrDraw"
+				]
+			},
+			"Outcome": {
+				"$ref": "#/components/schemas/_36_Enums.Outcome"
+			},
+			"_36_Enums.CategoryDepth": {
+				"type": "string",
+				"enum": [
+					"Pickem",
+					"DayPickem",
+					"WeekPickem",
+					"Game",
+					"Team",
+					"Player"
+				]
+			},
+			"CategoryDepth": {
+				"$ref": "#/components/schemas/_36_Enums.CategoryDepth"
+			},
+			"_36_Enums.ParticipantRole": {
+				"type": "string",
+				"enum": [
+					"Creator",
+					"Participant",
+					"Initiator",
+					"Initializer"
+				]
+			},
+			"ParticipantRole": {
+				"$ref": "#/components/schemas/_36_Enums.ParticipantRole"
+			},
+			"_36_Enums.PickemScoreMode": {
+				"type": "string",
+				"enum": [
+					"OutrightWinner",
+					"WinnerBySpread"
+				]
+			},
+			"PickemScoreMode": {
+				"$ref": "#/components/schemas/_36_Enums.PickemScoreMode"
+			},
+			"CreateChallenge": {
+				"properties": {
+					"creatorAccountId": {
+						"type": "string"
+					},
+					"challengeMode": {
+						"$ref": "#/components/schemas/ChallengeMode"
+					},
+					"challengeType": {
+						"$ref": "#/components/schemas/ChallengeType"
+					},
+					"oddsFlag": {
+						"type": "boolean"
+					},
+					"challengeValueQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantOutcome": {
+						"$ref": "#/components/schemas/Outcome"
+					},
+					"participantOdds": {
+						"type": "number",
+						"format": "double"
+					},
+					"paidWalletAddress": {
+						"type": "string"
+					},
+					"transactionHash": {
+						"type": "string"
+					},
+					"exchangeRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"gameType": {
+						"$ref": "#/components/schemas/CategoryDepth"
+					},
+					"pickem": {
+						"type": "string"
+					},
+					"sportId": {
+						"type": "number",
+						"format": "double"
+					},
+					"leagueName": {
+						"type": "string"
+					},
+					"homeAbbreviation": {
+						"type": "string"
+					},
+					"awayAbbreviation": {
+						"type": "string"
+					},
+					"winCriteria": {
+						"type": "number",
+						"format": "double"
+					},
+					"gameId": {
+						"type": "number",
+						"format": "double"
+					},
+					"playerId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"categoryId": {
+						"type": "number",
+						"format": "double"
+					},
+					"groupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"subgroupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantStatP1": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantStatP2": {
+						"type": "number",
+						"format": "double"
+					},
+					"statAttribute": {
+						"type": "string"
+					},
+					"startDate": {
+						"type": "string"
+					},
+					"endDate": {
+						"type": "string"
+					},
+					"multiTokenFlag": {
+						"type": "boolean"
+					},
+					"contractId": {
+						"type": "number",
+						"format": "double"
+					},
+					"scContractId": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantRole": {
+						"$ref": "#/components/schemas/ParticipantRole"
+					},
+					"participantInputQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"pickemScoreMode": {
+						"$ref": "#/components/schemas/PickemScoreMode"
+					}
+				},
+				"required": [
+					"creatorAccountId",
+					"challengeMode",
+					"challengeType",
+					"oddsFlag",
+					"challengeValueQty",
+					"participantOutcome",
+					"participantOdds",
+					"paidWalletAddress",
+					"transactionHash",
+					"exchangeRate",
+					"gameType",
+					"sportId",
+					"leagueName",
+					"gameId",
+					"startDate",
+					"endDate",
+					"multiTokenFlag",
+					"contractId",
+					"scContractId",
+					"participantRole"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"JoinChallenge": {
+				"properties": {
+					"participantAccountId": {
+						"type": "string"
+					},
+					"paidWalletAddress": {
+						"type": "string"
+					},
+					"oddsFlag": {
+						"type": "boolean"
+					},
+					"multiTokenFlag": {
+						"type": "boolean"
+					},
+					"participantOutcome": {
+						"$ref": "#/components/schemas/Outcome"
+					},
+					"participantOdds": {
+						"type": "number",
+						"format": "double"
+					},
+					"participationValueQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"scChallengeId": {
+						"type": "string"
+					},
+					"transactionHash": {
+						"type": "string"
+					},
+					"challengeValueQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"participationValueUsd": {
+						"type": "number",
+						"format": "double"
+					},
+					"exchangeRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"challengeMode": {
+						"$ref": "#/components/schemas/ChallengeMode"
+					},
+					"gameType": {
+						"$ref": "#/components/schemas/CategoryDepth"
+					},
+					"contractId": {
+						"type": "number",
+						"format": "double"
+					},
+					"categoryId": {
+						"type": "number",
+						"format": "double"
+					},
+					"groupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"subgroupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"challengeGroupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantStatP1": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantStatP2": {
+						"type": "number",
+						"format": "double"
+					},
+					"statAttribute": {
+						"type": "string"
+					},
+					"participantRole": {
+						"$ref": "#/components/schemas/ParticipantRole"
+					},
+					"participantInputQty": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"participantAccountId",
+					"paidWalletAddress",
+					"oddsFlag",
+					"multiTokenFlag",
+					"participantOutcome",
+					"participantOdds",
+					"participationValueQty",
+					"scChallengeId",
+					"transactionHash",
+					"challengeValueQty",
+					"participationValueUsd",
+					"exchangeRate",
+					"challengeMode",
+					"gameType",
+					"contractId",
+					"challengeGroupId",
+					"participantRole"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.Status": {
+				"type": "string",
+				"enum": [
+					"Active",
+					"Inactive",
+					"Restricted"
+				]
+			},
+			"Status": {
+				"$ref": "#/components/schemas/_36_Enums.Status"
+			},
+			"UpsertLineups": {
+				"properties": {
+					"sportId": {
+						"type": "number",
+						"format": "double"
+					},
+					"lineupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"challengeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"challengeResultId": {
+						"type": "number",
+						"format": "double"
+					},
+					"pickTeamId": {
+						"type": "string"
+					},
+					"spreadPoints": {
+						"type": "number",
+						"format": "double"
+					},
+					"gameId": {
+						"type": "number",
+						"format": "double"
+					},
+					"pickStatus": {
+						"$ref": "#/components/schemas/Status"
+					}
+				},
+				"required": [
+					"sportId",
+					"challengeId",
+					"challengeResultId",
+					"spreadPoints",
+					"gameId",
+					"pickStatus"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.ChallengeStatus": {
+				"type": "string",
+				"enum": [
+					"AuthPending",
+					"Pending",
+					"Ready",
+					"InProgress",
+					"Completed",
+					"Cancelled"
+				]
+			},
+			"ChallengeStatus": {
+				"$ref": "#/components/schemas/_36_Enums.ChallengeStatus"
+			},
+			"JoinChallengeForm": {
+				"properties": {
+					"scChallengeId": {
+						"type": "string"
+					},
+					"challengeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"walletAddress": {
+						"type": "string"
+					},
+					"contractId": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantOdds": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantAccountId": {
+						"type": "string"
+					},
+					"oddsFlag": {
+						"type": "boolean"
+					},
+					"multiTokenFlag": {
+						"type": "boolean"
+					},
+					"participationValueQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"participationValueUsd": {
+						"type": "number",
+						"format": "double"
+					},
+					"challengeDepth": {
+						"$ref": "#/components/schemas/CategoryDepth"
+					},
+					"challengeGroupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"exchangeRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantOutcome": {
+						"$ref": "#/components/schemas/Outcome"
+					},
+					"status": {
+						"$ref": "#/components/schemas/ChallengeStatus"
+					},
+					"categoryId": {
+						"type": "number",
+						"format": "double"
+					},
+					"groupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"subgroupId": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantStatP1": {
+						"type": "number",
+						"format": "double"
+					},
+					"participantStatP2": {
+						"type": "number",
+						"format": "double"
+					},
+					"statAttribute": {
+						"type": "string"
+					},
+					"isReady": {
+						"type": "boolean"
+					},
+					"participantRole": {
+						"$ref": "#/components/schemas/ParticipantRole"
+					},
+					"challengeMode": {
+						"$ref": "#/components/schemas/ChallengeMode"
+					}
+				},
+				"required": [
+					"scChallengeId",
+					"challengeId",
+					"walletAddress",
+					"contractId",
+					"participantOdds",
+					"participantAccountId",
+					"oddsFlag",
+					"multiTokenFlag",
+					"participationValueQty",
+					"participationValueUsd",
+					"challengeDepth",
+					"challengeGroupId",
+					"exchangeRate",
+					"participantOutcome",
+					"status",
+					"participantRole",
+					"challengeMode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateTiebreaker": {
+				"properties": {
+					"challengeResultId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tiebreaker": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"challengeResultId",
+					"tiebreaker"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateChallengeType": {
+				"properties": {
+					"challengeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"challengeType": {
+						"$ref": "#/components/schemas/ChallengeType"
+					}
+				},
+				"required": [
+					"challengeId",
+					"challengeType"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SmartContractResponse": {
+				"properties": {
+					"challengeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"scChallengeId": {
+						"type": "string"
+					},
+					"walletAddress": {
+						"type": "string"
+					},
+					"isScFailed": {
+						"type": "boolean"
+					},
+					"isJoin": {
+						"type": "boolean"
+					},
+					"isReadyState": {
+						"type": "boolean"
+					},
+					"exchangeRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"challengeValueQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"participationValueQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"transactionHash": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"challengeId",
+					"scChallengeId",
+					"walletAddress",
+					"isScFailed",
+					"isJoin",
+					"isReadyState",
+					"exchangeRate",
+					"challengeValueQty",
+					"participationValueQty",
+					"transactionHash"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpsertFavorites": {
+				"properties": {
+					"challengeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"isFavorite": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"challengeId",
+					"isFavorite"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpstakeTokenQty": {
+				"properties": {
+					"challengeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"scChallengeId": {
+						"type": "string"
+					},
+					"walletAddress": {
+						"type": "string"
+					},
+					"contractId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tokenUpstakeQty": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"challengeId",
+					"scChallengeId",
+					"walletAddress",
+					"contractId",
+					"tokenUpstakeQty"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.ShareStatus": {
+				"type": "string",
+				"enum": [
+					"Cancelled",
+					"Sent",
+					"Converted",
+					"Approved",
+					"Rejected"
+				]
+			},
+			"ShareStatus": {
+				"$ref": "#/components/schemas/_36_Enums.ShareStatus"
+			},
+			"UpdateChallengeMode": {
+				"properties": {
+					"challengeMode": {
+						"$ref": "#/components/schemas/ChallengeMode"
+					},
+					"shareStatus": {
+						"$ref": "#/components/schemas/ShareStatus"
+					},
+					"creatorStakedQty": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"challengeMode",
+					"shareStatus"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "sports-api",
+		"version": "1.1.0",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
+	},
+	"paths": {
+		"/sports/challenges": {
+			"post": {
+				"operationId": "CreateChallenge",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateChallenge"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports/challenges/{challengeId}": {
+			"post": {
+				"operationId": "JoinChallenge",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "challengeId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/JoinChallenge"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports/lineups": {
+			"patch": {
+				"operationId": "UpsertLineups",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpsertLineups"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports": {
+			"get": {
+				"operationId": "GetSports",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/sports/default-odds": {
+			"get": {
+				"operationId": "GetDefaultOdds",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/sports/join-challenge-form": {
+			"post": {
+				"operationId": "JoinChallengeForm",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/JoinChallengeForm"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports/tiebreaker": {
+			"patch": {
+				"operationId": "UpdateTiebreaker",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateTiebreaker"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports/challenges/type": {
+			"patch": {
+				"operationId": "UpdateChallengeType",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateChallengeType"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports/challenges/smartcontract": {
+			"patch": {
+				"operationId": "SmartContractResponse",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SmartContractResponse"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports/challenges/cancel/{challengeId}": {
+			"patch": {
+				"operationId": "CancelChallenge",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "challengeId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/sports/challenges/favorites": {
+			"get": {
+				"operationId": "GetFavorites",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			},
+			"patch": {
+				"operationId": "UpdateFavorites",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpsertFavorites"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports/potential-returns": {
+			"get": {
+				"operationId": "GetPotentialReturns",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/sports/challenges/upstake": {
+			"patch": {
+				"operationId": "UpstakeTokenQty",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpstakeTokenQty"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sports/challenges/{challengeId}/redis": {
+			"delete": {
+				"operationId": "RemoveJoinRedisKey",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "challengeId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/sports/leagues": {
+			"get": {
+				"operationId": "GetLeagues",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/quests": {
+			"get": {
+				"operationId": "GetQuests",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/quests/stats/me": {
+			"get": {
+				"operationId": "GetUserQuestStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/games/active-weeks/{leagueId}": {
+			"get": {
+				"operationId": "GetActiveWeeks",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "leagueId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "betType",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/games/{leagueId}": {
+			"get": {
+				"operationId": "GetGames",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "leagueId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/games/challenges/{inviteCode}": {
+			"get": {
+				"operationId": "GetGamesInChallenge",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "inviteCode",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/games/players/leagues/{leagueId}": {
+			"get": {
+				"operationId": "GetPlayersInTeam",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "leagueId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/public": {
+			"get": {
+				"operationId": "ListPublicChallenges",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/challenges/contracts": {
+			"get": {
+				"operationId": "GetContracts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/challenges/{inviteCode}/metrics/{userId}": {
+			"get": {
+				"operationId": "GetChallengeMetrics",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "inviteCode",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/{inviteCode}/lineups/{challengeResultId}": {
+			"get": {
+				"operationId": "GetPickemChallengeLineups",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "inviteCode",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "challengeResultId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/requests": {
+			"get": {
+				"operationId": "GetPartialBetEvents",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/challenges/{userId}": {
+			"get": {
+				"operationId": "GetUserChallenges",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/{challengeId}/requests": {
+			"patch": {
+				"operationId": "UpdateChallengeMode",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "challengeId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateChallengeMode"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/challenges/{inviteCode}/participants": {
+			"get": {
+				"operationId": "GetChallengeParticipants",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "inviteCode",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/{inviteCode}/leaderboard/{challengeResultId}": {
+			"get": {
+				"operationId": "GetChallengeLeaderboard",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "inviteCode",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "challengeResultId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/leagues/{leagueId}": {
+			"get": {
+				"operationId": "GetPublicChallenges",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "leagueId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/categories/games/{gameId}": {
+			"get": {
+				"operationId": "GetCategoriesInGame",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "gameId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/categories/{categoryId}/groups": {
+			"get": {
+				"operationId": "GetGroupsInCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "categoryId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/challenges/groups/{groupId}/subgroups": {
+			"get": {
+				"operationId": "GetSubgroupsInGroups",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ApiResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "groupId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/v1"
+		}
+	]
+}

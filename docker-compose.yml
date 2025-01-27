@@ -1,0 +1,274 @@
+services:
+  # ----- Infra -----
+
+  # PostgreSQL service
+  postgres:
+    image: postgres:15.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_LOCAL_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_LOCAL_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_LOCAL_DB}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    profiles:
+      - backend
+      - migrate
+
+  # Redis service
+  redis:
+    image: redis:7.0.7
+    ports:
+      - '6379:6379'
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # Kafka service with embedded Zookeeper
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - '9092:9092'
+    environment:
+      KAFKA_ENABLE_KRAFT: yes # Enable KRaft mode (Zookeeper-less mode)
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093 # Separate listeners for broker and controller
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092 # Only advertise broker listener
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER # Use CONTROLLER listener for the controller role
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093 # Controller quorum voters
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: true # Create topics on-demand
+      ALLOW_PLAINTEXT_LISTENER: yes # Allow plaintext for local development
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # Migration and seeding service for Prisma
+  migrate:
+    image: node:${NODE_VERSION} # Node.js to run Prisma commands
+    working_dir: /app
+    volumes:
+      - .:/app # Mount the current directory to /app
+    command: >
+      sh -c "
+      npm i -g prisma &&
+      npm install &&
+      cd ./packages/database &&
+      npm run build &&
+      npm run db:migrate:dev &&
+      npm run db:seed
+      "
+    environment:
+      DB_URL: ${DB_URL}
+    depends_on:
+      - postgres
+    networks:
+      - internal
+    profiles:
+      - migrate
+
+  # ----- APIs -----
+
+  # exposed-api service
+  exposed-api:
+    build:
+      context: ./ # Use the root as the build context
+      dockerfile: ./apps/exposed-api/Dockerfile # Specify the Dockerfile path
+    environment:
+      PORT: ${EXPOSED_API_PORT} # PORT in .enf.defaults won't work since Docker image is ran from the project root
+    env_file:
+      - .env # This ensures .env variables are available at runtime
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - sports-api
+      - user-api
+    ports:
+      - '${EXPOSED_API_PORT}:${EXPOSED_API_PORT}'
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # sports-api service
+  sports-api:
+    build:
+      context: ./
+      dockerfile: ./apps/sports-api/Dockerfile
+    environment:
+      PORT: ${SPORTS_API_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    ports:
+      - '${SPORTS_API_PORT}:${SPORTS_API_PORT}'
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # user-api service
+  user-api:
+    build:
+      context: ./
+      dockerfile: ./apps/account-api/Dockerfile
+    environment:
+      PORT: ${USER_API_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    volumes:
+      - ./firebase-duelnow.json:/tmp/firebase-duelnow.json
+    ports:
+      - '${USER_API_PORT}:${USER_API_PORT}'
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # ----- Frontend -----
+  frontend:
+    build:
+      context: ../frontend # Adjust the path to where your frontend repo is located
+      dockerfile: Dockerfile # Specify the Dockerfile inside the frontend repo
+    env_file:
+      - ../frontend/.env # Path to the .env file in the frontend directory
+    ports:
+      - '${FRONTEND_PORT}:${FRONTEND_PORT}' # Map the frontend service port to host's 3000 port
+    depends_on:
+      - exposed-api # List any dependencies the frontend might need, if any
+    networks:
+      - internal
+    profiles:
+      - frontend
+
+  # ----- Workers -----
+
+  # alert-worker service
+  alert-worker:
+    build:
+      context: ./
+      dockerfile: ./apps/alert-worker/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - kafka
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # customerio-worker service
+  customerio-worker:
+    build:
+      context: ./
+      dockerfile: ./apps/customerio-worker/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - kafka
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # event-worker service
+  event-worker:
+    build:
+      context: ./
+      dockerfile: ./apps/event-worker/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # mixpanel-worker service
+  mixpanel-worker:
+    build:
+      context: ./
+      dockerfile: ./apps/mixpanel-worker/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - kafka
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # quest-worker service
+  quest-worker:
+    build:
+      context: ./
+      dockerfile: ./apps/quest-worker/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # retry-worker service
+  retry-worker:
+    build:
+      context: ./
+      dockerfile: ./apps/retry-worker/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - internal
+    profiles:
+      - backend
+
+  # sports-worker service
+  sports-worker:
+    build:
+      context: ./
+      dockerfile: ./apps/sports-worker/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - internal
+    profiles:
+      - backend
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  internal:
+    driver: bridge

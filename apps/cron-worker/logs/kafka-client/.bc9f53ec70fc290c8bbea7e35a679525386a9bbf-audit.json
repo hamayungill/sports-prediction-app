@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "logs/kafka-client/.bc9f53ec70fc290c8bbea7e35a679525386a9bbf-audit.json",
+    "files": [
+        {
+            "date": 1732887165317,
+            "name": "logs/kafka-client/kafka-client_application_2024_11_29.log",
+            "hash": "e8219816e94d963a8337e9200fd5351b606f490da55f4f641df20a00135a80f9"
+        }
+    ],
+    "hashType": "sha256"
+}

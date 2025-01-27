@@ -1,0 +1,36 @@
+{
+  "name": "@duelnow/redis",
+  "version": "1.0.1",
+  "description": "",
+  "main": "./dist/index.js",
+  "source": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "npx jest --coverage --colors",
+    "lint": "tsc --noEmit && eslint . --ext=.js,.ts,.json",
+    "lint:fix": "eslint . --ext=.js,.ts,.json --fix",
+    "build": "tsc -b"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@duelnow/eslint-config": "*",
+    "@duelnow/tsconfig": "*",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
+  },
+  "dependencies": {
+    "@duelnow/logger": "*",
+    "redis": "^4.6.10"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "verbose": true,
+    "maxWorkers": 1
+  }
+}

@@ -1,0 +1,20 @@
+name: infra
+runtime: nodejs
+description: DuelNow Backend
+config:
+  ports:
+    value:
+      exposedApi: 8000
+      accountApi: 8001
+      sportsApi: 8002
+      sportsWorker: 9001
+      mixpanelWorker: 9002
+      customerIoWorker: 9003
+      eventWorker: 9004
+      retryWorker: 9005
+      questWorker: 9006
+      alertWorker: 9007
+  email:
+    value:
+      verifyCodeCache: '600'
+      whitelistEmailDomain: 'duelnow.com'

@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "logs/redis/.d60cadeba9a8c207ae1ac434b23013029aca323d-audit.json",
+    "files": [
+        {
+            "date": 1732887165058,
+            "name": "logs/redis/redis_application_2024_11_29.log",
+            "hash": "adf7a8985b5ae281ddab1f89af21956e1f924b863e60453f7a39e3daf6f75287"
+        }
+    ],
+    "hashType": "sha256"
+}
