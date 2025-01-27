@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Documentation link for kafka error handling
-// https://www.notion.so/stormx/Kafka-2341b1c01b624f83ae06874375c5bcd9?pvs=4#409c029c34e94600aaf35748c25cb82d
+// https://www.notion.so/xyz/Kafka-2341b1c01b624f83ae06874375c5bcd9?pvs=4#409c029c34e94600aaf35748c25cb82d
 import { Prisma } from '@duelnow/database'
 import { FatalError, NonRetriableError, RetriableError } from '@duelnow/utils'
 
